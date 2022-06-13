@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	body {
+		@apply bg-body !scrollbar-thin !scrollbar-track-transparent !scrollbar-thumb-btn hover:scrollbar-thumb-cta;
+	}
+}

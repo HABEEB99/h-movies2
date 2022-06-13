@@ -1,86 +1,97 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
+import React from 'react';
+import Head from 'next/head';
+import Image from 'next/image';
+import Banner from '../components/banner/Banner';
+import PagesLayout from '../components/layout/PagesLayout';
 
-const Home: NextPage = () => {
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-2">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+import { Movie } from '../../typings';
+import apiRequests from '../lib/apiRequests';
+import { GetServerSideProps } from 'next';
+import MovieCollection from '../components/movie-collection/MovieCollection';
 
-      <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
-        <h1 className="text-6xl font-bold">
-          Welcome to{' '}
-          <a className="text-blue-600" href="https://nextjs.org">
-            Next.js!
-          </a>
-        </h1>
+type HomeProps = {
+	netflixOriginals: Movie[];
+	trendingNow: Movie[];
+	topRated: Movie[];
+	actionMovies: Movie[];
+	comedyMovies: Movie[];
+	horrorMovies: Movie[];
+	romanceMovies: Movie[];
+	documentaries: Movie[];
+	// products: Product[]
+};
 
-        <p className="mt-3 text-2xl">
-          Get started by editing{' '}
-          <code className="rounded-md bg-gray-100 p-3 font-mono text-lg">
-            pages/index.tsx
-          </code>
-        </p>
+const Home: React.FC<HomeProps> = ({
+	netflixOriginals,
+	actionMovies,
+	comedyMovies,
+	documentaries,
+	horrorMovies,
+	romanceMovies,
+	topRated,
+	trendingNow,
+}) => {
+	return (
+		<PagesLayout title="Home Page" description="This is the home page">
+			<div className="relative p-4 pb-0 md:pb-16">
+				<Banner actionMovies={actionMovies} />
+				<section className="mt-10">
+					<MovieCollection title="Documentaries" collections={documentaries} />
+					<MovieCollection
+						title="Netflix Originals"
+						collections={netflixOriginals}
+					/>
+					<MovieCollection title="Action" collections={actionMovies} />
+					<MovieCollection title="Comedy" collections={comedyMovies} />
+					<MovieCollection title="Horror" collections={horrorMovies} />
+					<MovieCollection title="Romance" collections={romanceMovies} />
+					<MovieCollection title="Top Rated" collections={topRated} />
+					<MovieCollection title="Trending" collections={trendingNow} />
+				</section>
+			</div>
+		</PagesLayout>
+	);
+};
+export default Home;
 
-        <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
-          <a
-            href="https://nextjs.org/docs"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and its API.
-            </p>
-          </a>
+export const getServerSideProps: GetServerSideProps = async () => {
+	// const products = await getProducts(payments, {
+	//   includePrices: true,
+	//   activeOnly: true,
+	// })
+	//   .then((res) => res)
+	//   .catch((error) => console.log(error.message))
 
-          <a
-            href="https://nextjs.org/learn"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Learn &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Learn about Next.js in an interactive course with quizzes!
-            </p>
-          </a>
+	const [
+		netflixOriginals,
+		trendingNow,
+		topRated,
+		actionMovies,
+		comedyMovies,
+		horrorMovies,
+		romanceMovies,
+		documentaries,
+	] = await Promise.all([
+		fetch(apiRequests.fetchNetflixOriginals).then((res) => res.json()),
+		fetch(apiRequests.fetchTrending).then((res) => res.json()),
+		fetch(apiRequests.fetchTopRated).then((res) => res.json()),
+		fetch(apiRequests.fetchActionMovies).then((res) => res.json()),
+		fetch(apiRequests.fetchComedyMovies).then((res) => res.json()),
+		fetch(apiRequests.fetchHorrorMovies).then((res) => res.json()),
+		fetch(apiRequests.fetchRomanceMovies).then((res) => res.json()),
+		fetch(apiRequests.fetchDocumentaries).then((res) => res.json()),
+	]);
 
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Examples &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Discover and deploy boilerplate example Next.js projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Deploy &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className="flex h-24 w-full items-center justify-center border-t">
-        <a
-          className="flex items-center justify-center gap-2"
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-        </a>
-      </footer>
-    </div>
-  )
-}
-
-export default Home
+	return {
+		props: {
+			netflixOriginals: netflixOriginals.results,
+			trendingNow: trendingNow.results,
+			topRated: topRated.results,
+			actionMovies: actionMovies.results,
+			comedyMovies: comedyMovies.results,
+			horrorMovies: horrorMovies.results,
+			romanceMovies: romanceMovies.results,
+			documentaries: documentaries.results,
+		},
+	};
+};
