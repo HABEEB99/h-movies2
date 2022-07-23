@@ -6,8 +6,7 @@ import Header from '../header/Header';
 type PagesLayoutProps = {
 	title?: string;
 	description?: string;
-	children?: any;
-	// children: ReactElement<any, any> | null;
+	children: React.ReactNode;
 };
 
 const PagesLayout: React.FC<PagesLayoutProps> = ({
@@ -16,7 +15,7 @@ const PagesLayout: React.FC<PagesLayoutProps> = ({
 	title,
 }) => {
 	return (
-		<section className="w-screen min-h-screen">
+		<section className="w-screen min-h-screen overflow-hidden">
 			<Head>
 				<title>{title ? `H-MOVIES - ${title}` : 'H-MOVIES'}</title>
 				{description && <meta name="description" content={description} />}

@@ -5,11 +5,17 @@ import { BiCameraMovie } from 'react-icons/bi';
 import { ImMenu3, ImSearch } from 'react-icons/im';
 import { FaUserCog } from 'react-icons/fa';
 import SearchModal from '../modals/SearchModal';
+import UserModal from '../modals/UserModal';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../../../firebase';
+import Image from 'next/image';
 
 type HeaderProps = {};
 
 const Header: React.FC<HeaderProps> = () => {
+	const [currentUser] = useAuthState(auth);
 	const [openSearchModal, setOpenSearchModal] = useState<boolean>(false);
+	const [openUserModal, setOpenUserModal] = useState<boolean>(false);
 	const [scroll, setScroll] = useState<boolean>(false);
 
 	const handleScroll = () => {
@@ -50,11 +56,32 @@ const Header: React.FC<HeaderProps> = () => {
 					onClick={() => setOpenSearchModal(!openSearchModal)}
 					className="hover:text-cta md:hidden"
 				/>
-				<FaUserCog className="hover:text-cta" />
-				<ImMenu3 className="hover:text-cta" />
+				<FaUserCog
+					onClick={() => setOpenUserModal(!openUserModal)}
+					className="hover:text-cta"
+				/>
+
+				{currentUser && (
+					<div className="flex items-center justify-center space-x-2 w-32 h-10 rounded-md bg-white">
+						<div className="relative w-6 h-6 rounded-full">
+							<Image
+								src={currentUser.photoURL!}
+								alt="Profile pic"
+								layout="fill"
+								objectFit="cover"
+								className="rounded-full"
+							/>
+						</div>
+						<h1 className="text-xs font-bold text-btn">
+							{currentUser.displayName?.substring(0, 8)}..
+						</h1>
+					</div>
+				)}
+				{/* <ImMenu3 className="hover:text-cta" /> */}
 			</div>
 
 			{openSearchModal && <SearchModal />}
+			{openUserModal && <UserModal />}
 		</header>
 	);
 };
